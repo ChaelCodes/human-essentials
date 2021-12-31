@@ -98,9 +98,13 @@ RSpec.describe "Dashboard", type: :system, js: true, skip_seed: true do
       let(:last_year_date) { Time.zone.now - 1.year }
       let(:beginning_of_year) { Time.zone.now.beginning_of_year }
 
+      # Arbitrary, identifiable values
+      let(:quantity_per_item) { 111 }
+      let(:num_items) { 3 }
+
       describe "Summary" do
         before do
-          create_list(:storage_location, 3, :with_items, item_quantity: 111, organization: @organization)
+          create_list(:storage_location, num_items, :with_items, item_quantity: quantity_per_item, organization: @organization)
           dashboard_page.visit
         end
 
@@ -110,15 +114,10 @@ RSpec.describe "Dashboard", type: :system, js: true, skip_seed: true do
 
         context "when constrained to date range" do
           it "does not change" do
-            within "#summary" do
-              expect(page).to have_content("333")
-            end
-
-            date_range_picker_select_range "Last Month"
-
-            within "#summary" do
-              expect(page).to have_content("333")
-            end
+            expected_total_inventory = num_items * quantity_per_item
+            expect { dashboard_page.select_date_filter_range "Last Month" }
+              .not_to change { dashboard_page.total_inventory }
+              .from expected_total_inventory
           end
         end
       end
