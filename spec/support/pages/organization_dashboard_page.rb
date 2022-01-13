@@ -12,6 +12,12 @@ class OrganizationDashboardPage < OrganizationPage
     end
   end
 
+  def create_new_purchase
+    within purchases_section do
+      click_link "New Purchase"
+    end
+  end
+
   def filter_to_date_range(range_name)
     select_date_filter_range range_name
     click_on "Filter"
@@ -51,6 +57,12 @@ class OrganizationDashboardPage < OrganizationPage
     end
   end
 
+  def recent_purchase_links
+    within purchases_section do
+      all("a.purchase").map(&:text)
+    end
+  end
+
   def select_date_filter_range(range_name)
     find("#filters_date_range").click
     within ".ranges" do
@@ -82,5 +94,9 @@ class OrganizationDashboardPage < OrganizationPage
 
   def org_logo_selector
     ".organization-logo"
+  end
+
+  def purchases_section
+    find "#purchases"
   end
 end
